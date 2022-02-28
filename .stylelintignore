@@ -1,0 +1,5 @@
+# Compiled assets
+dist
+
+# Third party stuff
+vendor

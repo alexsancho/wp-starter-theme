@@ -4,13 +4,14 @@
  */
 
 // Require all function files under /lib.
-$lib_path = dirname( __FILE__ ) . '/lib/';
+$lib_path = __DIR__ . '/lib/';
 
 // List your /lib files here.
 $includes = [
-    'extras.php', // Custom functions
-    'setup.php',  // Theme setup
-    'images.php', // Image functions
+    'helpers.php', // Helper functions
+    'extras.php',  // Custom functions
+    'setup.php',   // Theme setup
+    'images.php',  // Image functions
 ];
 
 // Loop through the includes and require them as part of the functions.

@@ -1,103 +1,183 @@
-/* global __dirname process */
+/**
+ * @see https://developer.wordpress.org/block-editor/tutorials/javascript/js-build-setup/
+ */
 
-const webpack                 = require( 'webpack' );
-const ExtractTextPlugin       = require( 'extract-text-webpack-plugin' );
-const autoprefixer            = require( 'autoprefixer' );
-const autoprefixerBrowsers    = [ '> 1%', 'last 2 versions', 'Firefox ESR', 'Opera 12.1' ];
-const path                    = require( 'path' ); // This resolves into the absolute path of the theme root.
-const env                     = process.env.NODE_ENV;
+const defaultConfig = require('@wordpress/scripts/config/webpack.config.js');
+const path = require('path');
+const del = require('del');
+const pack = require('./package.json');
+const isProduction = process.env.NODE_ENV === 'production';
 
-let config = {
-    entry: {
-        main: __dirname + '/assets/scripts/main.js',
-        admin: __dirname + '/assets/scripts/admin.js'
-    },
-    output: {
-        path: __dirname + '/assets/dist',
-        filename: '[name].js'
-    },
-    externals: {
+const IgnoreEmitPlugin = require('ignore-emit-webpack-plugin');
+const TerserJSPlugin = require('terser-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const ManifestPlugin = require('webpack-assets-manifest');
 
-        // Set jQuery to be an external resource.
-        'jquery': 'jQuery'
-    },
-    postcss: function() {
+/**
+ * Given a string, returns a new string with dash separators converted to
+ * camel-case equivalent. This is not as aggressive as `_.camelCase`, which
+ * which would also upper-case letters following numbers.
+ *
+ * @param {string} string Input dash-delimited string.
+ *
+ * @return {string} Camel-cased string.
+ */
+const camelCaseDash = (string) =>
+	string.replace(/-([a-z])/g, (match, letter) => letter.toUpperCase());
 
-        // Enable autoprefixing.
-        return [ autoprefixer({ browsers: autoprefixerBrowsers }) ];
-    },
-    plugins: [
+const outputPath = path.resolve(process.cwd(), 'dist');
 
-        // Extract all css into one file.
-        new ExtractTextPlugin( '[name].css', {
-            allChunks: true
-        }),
+/**
+ * Remove project files here when webpack is loaded. Be sure it is not async.
+ */
+del.sync([path.resolve(outputPath, '**/*')]);
 
-        // Provide jQuery instance for all modules.
-        new webpack.ProvidePlugin({
-            jQuery: 'jquery'
-        })
-    ],
-    module: {
-        loaders: [
-            {
-                test: /\.js$/,
-                loader: 'babel-loader',
+/**
+ * Define externals to load components through the wp global.
+ */
+const externals = [
+	'api-fetch',
+	'block-editor',
+	'blocks',
+	'components',
+	'compose',
+	'data',
+	'date',
+	'htmlEntities',
+	'hooks',
+	'edit-post',
+	'element',
+	'editor',
+	'i18n',
+	'plugins',
+	'viewport',
+	'ajax',
+	'codeEditor',
+	'rich-text',
+].reduce(
+	(externals, name) => ({
+		...externals,
+		[`@wordpress/${name}`]: `wp.${camelCaseDash(name)}`,
+	}),
+	{
+		wp: 'wp',
+		jquery: 'jQuery',
+		lodash: 'lodash', // WP loads lodash already.
+	}
+);
 
-                // List paths to packages using ES6 to enable Babel compiling.
-                include: [
-                    path.resolve( __dirname, 'assets/scripts' ),
-                    path.resolve( __dirname, 'node_modules/foundation-sites' )
-                ],
-                query: {
+const rules = [
+	...defaultConfig.module.rules,
+	{
+		test: /\.(sc|sa|c)ss$/,
+		use: [
+			{ loader: MiniCssExtractPlugin.loader },
+			{ loader: 'css-loader' },
+			{
+				loader: 'postcss-loader',
+				options: {
+					ident: 'postcss',
+					plugins: (loader) => [
+						require('postcss-import')({
+							root: loader.resourcePath,
+						}),
+						require('postcss-preset-env')({
+							browsers: pack.browserslist,
+						}),
+						require('postcss-reporter')({
+							clearReportedMessages: true,
+						}),
+					],
+				},
+			},
+			{ loader: 'sass-loader' },
+		],
+	},
+	{
+		test: /\.(png|jpg|gif)$/,
+		use: [
+			{
+				loader: 'file-loader',
+				options: {
+					outputPath: 'images/', // Dump images in dist/images.
+					publicPath: 'images', // URLs point to dist/images.
+					regExp: /\/([^\/]+)\/([^\/]+)\/images\/(.+)\.(.*)?$/, // Gather strings for the output filename.
+					name: '[1]-[2]-[3].[hash:hex:7].[ext]', // Filename e.g. block-accordion-basic.1b659fc.png
+				},
+			},
+		],
+	},
+	{
+		test: /\.(woff(2)?|ttf|eot)(\?v=\d+\.\d+\.\d+)?$/,
+		use: [
+			{
+				loader: 'file-loader',
+				options: {
+					name: '[name].[ext]',
+					outputPath: 'fonts/',
+					publicPath: 'fonts', // URLs point to dist/fonts.
+				},
+			},
+		],
+	},
+];
 
-                    // Do not use the .babelrc configuration file.
-                    babelrc: false,
-
-                    // The loader will cache the results of the loader in node_modules/.cache/babel-loader.
-                    cacheDirectory: true,
-
-                    // The 'transform-runtime' plugin tells babel to require the runtime instead of inlining it.
-                    plugins: [ 'transform-runtime' ],
-
-                    // List enabled ECMAScript feature sets.
-                    presets: [ 'es2015', 'stage-0' ]
-                }
-            },
-            {
-                test: /\.css$/,
-                loader: ExtractTextPlugin.extract( 'style', 'css' )
-            },
-            {
-                test: /\.scss$/,
-                loader: ExtractTextPlugin.extract( 'style-loader', 'css!postcss!sass' )
-            },
-            {
-                test: /\.(woff(2)?|eot|ttf|otf)(\?[a-z0-9=\.]+)?$/,
-                loader: 'file?name=../fonts/[name].[ext]'
-            },
-            {
-                test: /\.(svg|gif|png|jpeg|jpg)(\?[a-z0-9=\.]+)?$/,
-                loader: 'file?name=../images/[name].[ext]'
-            }
-        ]
-    },
-    watchOptions: {
-        poll: 500
-    }
+const output = {
+	filename: '[name].[hash].js',
+	publicPath: 'dist/',
 };
 
-if ( env === 'production' ) {
-    config.plugins.push(
+module.exports = [
+	{
+		...defaultConfig,
+		entry: {
+			'admin.min': path.resolve(
+				process.cwd(),
+				'assets/src/back',
+				'main.js'
+			),
+			'bundle.min': path.resolve(
+				process.cwd(),
+				'assets/src/front',
+				'main.js'
+			),
+		},
+		externals,
+		optimization: {
+			minimize: isProduction,
+			minimizer: [
+				new TerserJSPlugin({}),
+				new OptimizeCSSAssetsPlugin({}),
+			],
+			noEmitOnErrors: isProduction,
+		},
+		stats: {
+			all: false,
+			assets: true,
+			colors: true,
+			errors: true,
+			performance: true,
+			timings: true,
+			warnings: true,
+		},
+		module: {
+			...defaultConfig.module,
+			rules,
+		},
+		plugins: [
+			...defaultConfig.plugins,
 
-        // Minify for the production environment.
-        new webpack.optimize.UglifyJsPlugin({
-            mangle: false,
-            compress: {
-                unused: false
-            }
-        })
-    );
-}
+			new MiniCssExtractPlugin({
+				filename: '[name].[hash].css',
+			}),
 
-module.exports = config;
+			new IgnoreEmitPlugin(/\.asset.php$/),
+
+			new ManifestPlugin({
+				publicPath: true,
+			}),
+		],
+		output,
+	},
+];

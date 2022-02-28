@@ -37,12 +37,12 @@
 		<?php
 		/* translators: %s: Name of current post */
 		the_content( sprintf(
-			__( 'Continue reading<span class="screen-reader-text"> "%s"</span>', 'themename-textdomain' ),
+			__( 'Continue reading<span class="screen-reader-text"> "%s"</span>', 'textdomain' ),
 			get_the_title()
 		) );
 
 		wp_link_pages( array(
-			'before'      => '<div class="page-links">' . __( 'Pages:', 'themename-textdomain' ),
+			'before'      => '<div class="page-links">' . __( 'Pages:', 'textdomain' ),
 			'after'       => '</div>',
 			'link_before' => '<span class="page-number">',
 			'link_after'  => '</span>',

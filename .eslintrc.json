@@ -1,0 +1,27 @@
+{
+    "root": true,
+    "parser": "babel-eslint",
+    "extends": [
+        "plugin:@wordpress/eslint-plugin/recommended"
+    ],
+    "rules": {
+        "no-shadow": "off",
+        "no-nested-ternary": "off",
+        "@wordpress/i18n-text-domain": "off"
+    },
+    "env": {
+        "browser": false,
+        "commonjs": true,
+        "es6": true,
+        "node": true
+    },
+    "parserOptions": {
+        "ecmaVersion": 2018,
+        "sourceType": "module"
+    },
+    "globals": {
+        "google": true,
+        "fetch": true,
+        "localStorage": true
+    }
+}
