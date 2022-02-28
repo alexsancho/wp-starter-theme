@@ -10,7 +10,7 @@
  *
  * @return array
  */
-function THEMENAME_disable_emojis_tinymce(mixed $plugins) : array
+function THEMENAME_disable_emojis_tinymce($plugins) : array
 {
     if (is_array($plugins)) {
         return array_diff($plugins, ['wpemoji']);
@@ -82,7 +82,7 @@ if ( ! function_exists('THEMENAME_get_manifest_file')) {
      *                          will be returned with more details.
      * @throws JsonException
      */
-    function THEMENAME_get_manifest_file(string $filename, string $manifestPath = null) : WP_Error|string
+    function THEMENAME_get_manifest_file(string $filename, string $manifestPath = null)
     {
         // Set the default path if one isn't provided.
         if ($manifestPath === null) {
