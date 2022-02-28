@@ -44,13 +44,7 @@ Run webpack in the theme root in your local environment.
 Run with the npm script:
 
 ```
-npm run dev/watch
-```
-
-or run with Webpack:
-
-```
-webpack (--watch)
+npm run start
 ```
 
 These commands will compile *unminified* versions of your assets.
@@ -63,12 +57,6 @@ Build _minified_ versions for production with the npm script:
 npm run build
 ```
 
-or with Webpack:
-
-```
-webpack -p
-```
-
 These commands will compile *minified* versions of your assets.
 
 ## JavaScript development guide
@@ -78,13 +66,3 @@ The theme's Webpack config uses [Babel](https://babeljs.io/) to compile [ES6](ht
 ### Enable Babel compiling
 
 If you add *npm packages* using ES6 features, remember to include them for the Babel loader in the `webpack.config.js` file!
-
-```
-// List paths to packages using ES6 to enable Babel compiling.
-include: [
-    path.resolve(__dirname, 'assets/scripts'),
-    path.resolve(__dirname, 'node_modules/foundation-sites')
-],
-```
-
-*UglifyJS will most likely produce an error when trying to minify an ES6 script that is not included for the Babel loader while running `webpack -p`!*
