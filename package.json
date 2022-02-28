@@ -23,6 +23,7 @@
         "@babel/preset-env": "^7.9.6",
         "@babel/preset-react": "^7.10.4",
         "@svgr/webpack": "^5.4.0",
+        "@wordpress/base-styles": "^4.1.1",
         "@wordpress/browserslist-config": "^2.6.0",
         "@wordpress/eslint-plugin": "^6.0.0",
         "@wordpress/hooks": "^2.8.0",

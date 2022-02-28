@@ -1894,6 +1894,11 @@
     "@wordpress/warning" "^1.3.0"
     core-js "^3.6.4"
 
+"@wordpress/base-styles@^4.1.1":
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/@wordpress/base-styles/-/base-styles-4.1.1.tgz#f1c3e940d897d3733149a88c944c9cbab4116a04"
+  integrity sha512-DFWyfgHxsVhKqRZH4cCrQjItNMDIoPBaJd3/bTd2jPCu+MN/PITR1xUY6cET3ASCR34vrJ0fWZeylncrCixTnw==
+
 "@wordpress/browserslist-config@^2.6.0", "@wordpress/browserslist-config@^2.7.0":
   version "2.7.0"
   resolved "https://registry.yarnpkg.com/@wordpress/browserslist-config/-/browserslist-config-2.7.0.tgz#37e39ede39bec5a540dc93b96569787025aadc83"
