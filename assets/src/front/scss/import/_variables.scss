@@ -1,0 +1,68 @@
+@use 'sass:math';
+
+// Font Sizes
+$base-font-size: 16px;
+$em-base: $base-font-size;
+$font-family-base: 'Roboto Condensed', sans-serif;
+$heading-font-family: $font-family-base;
+
+// font weight
+$ubold: 900; // Extra Black, Fat, Poster or Ultra Black
+$black: 800; // Black, Extra Bold or Heavy
+$bold: 700; // Bold
+$sbold: 600; // Semibold, Demibold
+$med: 500; //  Medium
+$norm: 400; //  Normal or Regular
+$light: 300; // Book or Demi
+$thin: 200; // 200 Light or Thin
+$ulight: 100; // 100 Extra Light or Ultra Light
+
+// Line height
+$base-line-height: 1.1;
+$heading-line-height: 1.2;
+
+// Other Sizes
+$width: 980px;
+$footer: 50px;
+$footer_margin: $footer - 2 * $footer;
+$base-border-radius: 3px;
+$base-spacing: $base-line-height * 1em;
+$small-spacing: math.div($base-spacing, 2);
+$base-z-index: 0;
+
+// Colors
+$orange: #e57200;
+$red: #fc0;
+$blue: #477dca;
+$gray-medium: #999;
+$gray-dark: #333;
+$gray-light: #ddd;
+
+// Font Colors
+$base-font-color: $gray-dark;
+$action-color: $blue;
+
+// Border
+$base-border-color: $gray-light;
+$base-border: 1px solid $base-border-color;
+
+// Background Colors
+$base-background-color: #fff;
+$secondary-background-color: tint($base-border-color, 75%);
+
+// Box Shadows
+// $base-box-shadow: 0 1px 3px rgba(#000, .06);
+// https://www.cssmatic.com/box-shadow
+$base-box-shadow: 0 0 30px 5px rgba(0, 0, 0, 0.25);
+
+// Forms
+$form-box-shadow: inset 0 1px 3px rgba(#000, 0.06);
+$form-box-shadow-focus: $form-box-shadow,
+	0 0 5px adjust-color($action-color, $lightness: -5%, $alpha: -0.3);
+
+// Animations
+$base-duration: 150ms;
+$base-timing: ease;
+$base-transition: background-color $base-duration * 5 $base-timing,
+	color $base-duration * 0.7 $base-timing,
+	opacity $base-duration * 0.3 $base-timing;
